@@ -50,7 +50,7 @@ jobs:
         run: make quickcheck
 
       - name: Build bindings
-        run: cd python && python3 -m build
+        run: cd python && python3 -m build -n
 
       - name: Store built Python bindings
         uses: actions/upload-artifact@v4
