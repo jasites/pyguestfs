@@ -22,8 +22,8 @@ jobs:
         with:
           python-version: "3.x"
 
-      - name: Install setuptools
-        run: pip3 install --user setuptools
+      - name: Install Python packaging dependencies
+        run: pip3 install --user build setuptools
 
       - name: Enable deb-src repositories
         run: 'sudo sed -i "s/^Types: deb$/Types: deb deb-src/" /etc/apt/sources.list.d/ubuntu.sources'
@@ -50,7 +50,7 @@ jobs:
         run: make quickcheck
 
       - name: Build bindings
-        run: make -C python sdist
+        run: cd python && python3 -m build
 
       - name: Store built Python bindings
         uses: actions/upload-artifact@v4
