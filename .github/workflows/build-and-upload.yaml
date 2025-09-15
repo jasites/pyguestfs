@@ -49,11 +49,8 @@ jobs:
       - name: Quick tests
         run: make quickcheck
 
-      - name: Build bindings sdist
-        run: make -C python sdist
-
-      - name: Build bindings wheel
-        run: make -C python setup-build
+      - name: Build bindings
+        run: make -C python sdist bdist_wheel
 
       - name: Store built Python bindings
         uses: actions/upload-artifact@v4
