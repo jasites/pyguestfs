@@ -14,10 +14,16 @@ jobs:
           repository: libguestfs/libguestfs
           submodules: true
 
+      - name: Update package name for uploading to PyPI
+        run: sed -i '/^setup/s/\bguestfs\b/pyguestfs/' python/setup.py.in
+
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
           python-version: "3.x"
+
+      - name: Install setuptools
+        run: pip3 install --user setuptools
 
       - name: Enable deb-src repositories
         run: 'sudo sed -i "s/^Types: deb$/Types: deb deb-src/" /etc/apt/sources.list.d/ubuntu.sources'
@@ -31,23 +37,20 @@ jobs:
       - name: Enable access to the KVM device
         run: sudo chmod 0666 /dev/kvm
 
-      - name: Compile
-        run: |
-          shopt -s inherit_errexit
-          set -euo pipefail
+      - name: Autoreconf
+        run: autoreconf -fiv
 
-          pip3 install --user setuptools
+      - name: Configure build
+        run: ./configure --disable-gobject
 
-          autoreconf -fiv
-
-          ./configure --disable-gobject
-
-          make -j
-
-          make -C python sdist
+      - name: Build libguestfs
+        run: make -j
 
       - name: Quick tests
         run: make quickcheck
+
+      - name: Build bindings
+        run: make -C python sdist
 
       - name: Store built Python bindings
         uses: actions/upload-artifact@v4
