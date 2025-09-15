@@ -32,7 +32,19 @@ jobs:
         run: sudo chmod 0666 /dev/kvm
 
       - name: Compile
-        run: autoreconf -fiv && ./configure --disable-gobject && make -j && make -C python sdist
+        run: |
+          shopt -s inherit_errexit
+          set -euo pipefail
+
+          pip3 install --user setuptools
+
+          autoreconf -fiv
+
+          ./configure --disable-gobject
+
+          make -j
+
+          make -C python sdist
 
       - name: Quick tests
         run: make quickcheck
