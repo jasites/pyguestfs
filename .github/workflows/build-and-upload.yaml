@@ -44,7 +44,10 @@ jobs:
         run: ./configure --disable-gobject
 
       - name: Build libguestfs
-        run: make V=1 REALLY_INSTALL=yes -j install
+        run: make V=1 -j
+
+      - name: Install libguestfs
+        run: sudo make V=1 REALLY_INSTALL=yes install
 
       - name: Build bindings sdist
         run: make V=1 INSTALLDIRS=vendor -C python sdist
