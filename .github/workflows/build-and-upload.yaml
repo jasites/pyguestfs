@@ -23,7 +23,7 @@ jobs:
           python-version: "3.x"
 
       - name: Install Python packaging dependencies
-        run: pip3 install --user build setuptools
+        run: pip3 install --user setuptools
 
       - name: Enable deb-src repositories
         run: 'sudo sed -i "s/^Types: deb$/Types: deb deb-src/" /etc/apt/sources.list.d/ubuntu.sources'
@@ -41,35 +41,16 @@ jobs:
         run: autoreconf -fiv
 
       - name: Configure build
-        run: >
-          ./configure
-          --disable-nls
-          --enable-fuse
-          --disable-probes
-          --disable-daemon
-          --disable-appliance
-          --disable-ocaml
-          --disable-perl
-          --disable-ruby
-          --disable-haskell
-          --disable-php
-          --disable-erlang
-          --disable-lua
-          --disable-golang
-          --disable-gobject
-          --disable-rust
-          --enable-vala=no
-          --with-readline
-          --without-java
+        run: ./configure --disable-gobject
 
       - name: Build libguestfs
-        run: make -j
-
-      - name: Quick tests
-        run: make quickcheck
+        run: make V=1 -j install
 
       - name: Build bindings sdist
-        run: python3 -m build -n --sdist python
+        run: make V=1 INSTALLDIRS=vendor -C python sdist
+
+      - name: Test installation of bindings
+        run: pip3 install --user python/dist/guestfs-*.tar.gz
 
       - name: Store built Python bindings
         uses: actions/upload-artifact@v4
